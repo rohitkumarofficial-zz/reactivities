@@ -1,3 +1,4 @@
+import { User, UserCreateOrLogin } from './../models/user';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { Activity } from './../models/activity';
@@ -66,8 +67,15 @@ const Activities = {
     delete: (id: string) => request.delete<void>(`/activities/${id}`),
 }
 
+const Account = {
+    current: () => request.get<User>('/account'),
+    login: (user: Partial<UserCreateOrLogin>) => request.post<User>('/account/login', user),
+    register: (user: UserCreateOrLogin) => request.post<User>('/account/register', user)
+}
+
 const agent = {
-    Activities
+    Activities,
+    Account
 }
 
 export default agent;
