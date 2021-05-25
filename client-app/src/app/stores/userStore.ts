@@ -34,4 +34,13 @@ export default class UserStore {
         window.localStorage.removeItem('jwt');
         history.push('/');
     }
+
+    getUser = async () => {
+        try {
+            const user = await agent.Account.current();
+            runInAction(() => this.user = user);
+        } catch (error) {
+            
+        }
+    }
 }
