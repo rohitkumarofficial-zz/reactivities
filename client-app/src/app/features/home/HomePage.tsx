@@ -1,10 +1,13 @@
-import { observer } from 'mobx-react-lite'
-import { Link } from 'react-router-dom'
-import { Container, Header, Segment, Image, Button } from 'semantic-ui-react'
-import { useStore } from '../../stores/store'
+import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Container, Header, Segment, Image, Button } from 'semantic-ui-react';
+import { useStore } from '../../stores/store';
+import LoginForm from '../users/LoginForm';
+import RegisterForm from '../users/RegisterForm';
 
 export default observer(function HomePage () {
-    const { userStore } = useStore();
+    const { userStore, modalStore } = useStore();
     return (
         <Segment inverted textAlign='center' vertical className='masthead'>
             <Container text>
@@ -20,9 +23,14 @@ export default observer(function HomePage () {
                         </Button>
                     </>)
                     : (
-                        <Button as={Link} to='/login' size='huge' inverted>
+                        <>
+                        <Button  size='huge' inverted onClick={() => modalStore.openModal(<LoginForm/>)}>
                             Login
                         </Button>
+                        <Button  size='huge' inverted onClick={() => modalStore.openModal(<RegisterForm/>)}>
+                            Register
+                        </Button>
+                        </>
                     )
                 }
             </Container>
