@@ -1,6 +1,8 @@
 ﻿using API.services;
 using Domain;
+using Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +39,12 @@ namespace API.Extensions
                         ValidateAudience = false
                      };
                 });
+            services.AddAuthorization(opt => {
+                opt.AddPolicy("IsActivityHost", policy => {
+                    policy.Requirements.Add(new IsHostRequirment());
+                });
+            });
+            services.AddTransient<IAuthorizationHandler, IHostRequirementHandler>();
             services.AddScoped<TokenService>();
             return services;
         }
