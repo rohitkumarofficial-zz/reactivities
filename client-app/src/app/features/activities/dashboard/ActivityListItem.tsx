@@ -1,7 +1,9 @@
 import { format } from 'date-fns';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Item, Button, Segment, Icon } from 'semantic-ui-react';
+import { Item, Button, Segment, Icon, Label } from 'semantic-ui-react';
 import { Activity } from './../../../models/activity';
+import ActivityListItemAttendee from './ActivityListItemAttendee';
 
 interface Props {
     activity: Activity
@@ -16,19 +18,33 @@ export default function ActivityListItem ({ activity }: Props) {
                         <Item.Image size='tiny' circular src='/assets/user.png' />
                         <Item.Content>
                             <Item.Header as={Link} to={`/activities/${activity.id}`}>{activity.title}</Item.Header>
-                            <Item.Description>Hosted By Bob</Item.Description>
+                            <Item.Description>Hosted By {activity.host?.displayName}</Item.Description>
+                            {activity.isHost && (
+                                <Item.Description>
+                                    <Label basic color="orange">
+                                        You are hosting the activity
+                                    </Label>
+                                </Item.Description>
+                            )}
+                            {activity.isGoing && !activity.isHost && (
+                                <Item.Description>
+                                    <Label basic color="green">
+                                        You are going to activity
+                                    </Label>
+                                </Item.Description>
+                            )}
                         </Item.Content>
                     </Item>
                 </Item.Group>
             </Segment>
             <Segment>
                 <span>
-                    <Icon name='clock' /> {format(activity.date! , 'dd MMM yyyy h:mm aa')}
+                    <Icon name='clock' /> {format(activity.date!, 'dd MMM yyyy h:mm aa')}
                     <Icon name='marker' /> {activity.venue}
                 </span>
             </Segment>
             <Segment secondary>
-                Attendees go here
+                <ActivityListItemAttendee attendees={activity.attendees!}/>
             </Segment>
             <Segment clearing>
                 <span>{activity.description}</span>
