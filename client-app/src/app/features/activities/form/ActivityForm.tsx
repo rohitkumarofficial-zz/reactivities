@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Button, Header, Segment } from 'semantic-ui-react'
 import LoadingComponent from '../../../layout/LoadingComponent';
-import { Activity } from '../../../models/activity';
+import { Activity, ActivityFormValues } from '../../../models/activity';
 import { useStore } from '../../../stores/store';
 import { v4 as uuid } from 'uuid';
 import { Formik, Form } from 'formik';
@@ -20,15 +20,7 @@ export default observer(function ActivityForm () {
     const { activityStore } = useStore();
     const { createActivity, updateActivity, loading, loadActivity, loadingInitial, setLoadingInitial } = activityStore;
     const { id } = useParams<{ id: string }>();
-    const [activity, setActivity] = useState<Activity>({
-        id: '',
-        title: '',
-        date: null,
-        description: '',
-        category: '',
-        city: '',
-        venue: ''
-    });
+    const [activity, setActivity] = useState<ActivityFormValues>(new ActivityFormValues());
 
     const validationSchema = Yup.object({
         title: Yup.string().required('Title is required'),
@@ -41,14 +33,14 @@ export default observer(function ActivityForm () {
 
     useEffect(() => {
         if (id) {
-            loadActivity(id).then(activity => setActivity(activity!));
+            loadActivity(id).then(activity => setActivity(new ActivityFormValues(activity)));
         } else {
             setLoadingInitial(false);
         }
     }, [id, loadActivity, setLoadingInitial]);
 
-    function handleFormSubmit (activity: Activity) {
-        if (activity.id.length === 0) {
+    function handleFormSubmit (activity: ActivityFormValues) {
+        if (!activity.id) {
             let newActivity = {
                 ...activity,
                 id: uuid()
@@ -78,7 +70,7 @@ export default observer(function ActivityForm () {
                         <Header content='Location Details' sub color='teal'/>
                         <MyTextInput placeholder='City' name='city' />
                         <MyTextInput placeholder='Venue' name='venue' />
-                        <Button floated='right' positive type='submit' content='Submit' loading={loading} disabled={isSubmitting || !dirty || !isValid}/>
+                        <Button floated='right' positive type='submit' content='Submit' loading={isSubmitting} disabled={isSubmitting || !dirty || !isValid}/>
                         <Button floated='right' type='button' content='Cancel' as={Link} to={activity.id ? `/activities/${activity.id}` : '/activities'} />
                     </Form>
 
